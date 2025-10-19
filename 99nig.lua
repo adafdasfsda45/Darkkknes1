@@ -206,7 +206,7 @@ workspace.DescendantAdded:Connect(function(desc)
     end
 end)
 
--- Auto Tree Farm Logic with timeout
+-- Auto Tree Farm Logic with timeout and hit limit
 local badTrees = {}
 
 task.spawn(function()
@@ -231,21 +231,24 @@ task.spawn(function()
                 if not AutoTreeFarmEnabled then break end
                 LocalPlayer.Character:PivotTo(trunk.CFrame + Vector3.new(0, 3, 0))
                 task.wait(0.2)
-                local startTime = tick()
-                while AutoTreeFarmEnabled and trunk and trunk.Parent and trunk.Parent.Name == "Small Tree" do
+                
+                -- Ограничение: только 5 ударов по дереву
+                local hitCount = 0
+                local maxHits = 5
+                
+                while AutoTreeFarmEnabled and trunk and trunk.Parent and trunk.Parent.Name == "Small Tree" and hitCount < maxHits do
                     mouse1click()
+                    hitCount = hitCount + 1
                     task.wait(0.2)
-                    if tick() - startTime > 12 then
-                        badTrees[trunk:GetFullName()] = true
-                        break
-                    end
                 end
+                
                 task.wait(0.3)
             end
         end
         task.wait(1.5)
     end
 end)
+
 
 -- Optimized Aimbot Logic
 local lastAimbotCheck = 0
